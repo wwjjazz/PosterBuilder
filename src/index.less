@@ -1,0 +1,113 @@
+@import "./minireset.css";
+@itemW: 400px;
+.wrap{
+    width: 764px;
+    overflow: hidden;
+    border: 1px solid red;
+    box-sizing: content-box;
+    margin: 10px auto;
+    .phone{
+        width: 320px; // 640
+        height: 504px; // 1008
+        margin: 10px;
+        border: 1px solid gray;
+        float: left;
+        background-size: 320px 504px;
+        position: relative;
+        img,.title{
+            position: absolute;
+        }
+    }
+    .tool-wrap{
+        width: 400px;
+        margin: 10px;
+        border: 1px solid gray;
+        float: right;
+        position: relative;
+        .tool-inner{
+            margin-bottom: 40px;
+            width: @itemW;
+            position: relative;
+            height: 464px;
+            overflow: hidden;
+            ul{
+                position: absolute;
+                width: @itemW*4+48;
+                overflow: hidden;
+            }
+            li{
+                width: @itemW;                
+                float: left;
+                height: 464px;
+                margin-right:12px;
+                background: yellow;
+                padding: 6px;
+                box-sizing:border-box;
+                .select-bg,.select-himg,.select-QRCode{
+                    overflow:hidden;
+                    display: flex;
+                    label{
+                        background: gray;
+                        color: white;
+                        border-radius: 2px;
+                        padding: 0 12px;
+                        height: 30px;
+                        line-height: 30px;
+                        display: inline-block;
+                        margin-left: 10px;
+                    }
+                    input{
+                        flex: 1;
+                        box-sizing: content-box;
+                        height: 26px;
+                        text-indent: 4px;
+                        border-width: 2px;
+                        padding: 0;
+                        vertical-align: top;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        &[type=file]{
+                            display: none;
+                        }
+                    }
+                }
+                .input-text{
+                    display: flex;
+                    margin-bottom: 10px;
+                    input{
+                        flex: 1;
+                        height: 26px;
+                        text-indent: 4px;
+                        border-width: 2px;
+                        padding: 0;
+                        outline: 0;
+                    }
+                }
+                .del,.add-title,.edit-title{
+                    margin-top: 10px;
+                }
+            }
+        }
+        .tool-nav{
+            height: 40px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            background: rgb(208, 245, 124);
+            color: gray;
+            li{
+                flex: 1;
+                line-height: 40px;
+                text-align: center;
+                user-select: none;
+                &.active{
+                    background: rgb(240, 127, 127);
+                    color: white;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <title>海报生成器</title>
+</head>
+<body>
+    <div class="wrap">
+        <div class="phone"></div>
+        <div class="tool-wrap">
+            <div class="tool-inner">
+                <ul>
+                    <li>
+                        <p class="select-bg">                            
+                            <input type="text" disabled placeholder="请选择背景图">
+                            <label for="file1">选择图片</label>
+                            <input type="file" id="file1">
+                        </p>
+                        <p class="del">
+                            <input type="button" value="删除背景图" disabled>
+                        </p>
+                    </li>
+                    <li>
+                        <p class="select-himg">
+                            <input type="text" disabled placeholder="请选择头像">
+                            <label for="file2">选择图片</label>
+                            <input type="file" id="file2">
+                        </p>
+                        <p class="del">
+                            <input type="button" value="删除头像" disabled>
+                        </p>
+                    </li>
+                    <li>
+                        <p class="input-text">
+                            <label for="text1">内容：</label>
+                            <input type="text" id="text1">
+                        </p>
+                        <p class="input-text">
+                            <label for="text2">字号：</label>
+                            <input type="text" id="text2">
+                        </p>
+                        <p class="input-text">
+                            <label for="text3">颜色：</label>
+                            <input type="text" id="text3">
+                        </p>
+                        <p class="add-title">
+                            <input type="button" value="添加标题">
+                        </p>
+                        <p class="edit-title">
+                            <input type="button" value="编辑标题" disabled>
+                        </p>
+                        <p class="del">
+                            <input type="button" value="删除标题" disabled>
+                        </p>
+                    </li>
+                    <li>
+                        <p class="select-QRCode">
+                            <input type="text" disabled placeholder="请选择二维码">
+                            <label for="file4">选择图片</label>
+                            <input type="file" id="file4">
+                        </p>
+                        <p class="del">
+                            <input type="button" value="删除二维码" disabled>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <ul class="tool-nav">
+                <li class="active">背景</li>
+                <li>头像</li>
+                <li>昵称</li>
+                <li>二维码</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
