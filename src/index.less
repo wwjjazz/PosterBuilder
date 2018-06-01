@@ -1,10 +1,10 @@
 @import "./minireset.css";
 @itemW: 400px;
+@offset: 8px;
 .wrap{
-    width: 764px;
+    width: 766px; // 764
     overflow: hidden;
     border: 1px solid red;
-    box-sizing: content-box;
     margin: 10px auto;
     .phone{
         width: 320px; // 640
@@ -14,8 +14,79 @@
         float: left;
         background-size: 320px 504px;
         position: relative;
-        img,.title{
+        box-sizing: content-box;
+        overflow: hidden;
+        .drag-wrap{
             position: absolute;
+            font-size: 0;
+            box-sizing: border-box;
+            user-select: none;
+            font-size: 14px;
+            .title{
+                white-space: nowrap;
+                padding: 4px;
+                text-align: center;
+                color: #222;
+            }
+            img{
+                width: 100%;
+                height: 100%;
+                // vertical-align: top;
+                // display: block;
+                // float:left;
+            }
+            .point{
+                position: absolute;
+                width: 14px;
+                height: 14px;
+                background:red;
+                z-index: 10;
+                // border-radius: 50%;
+            }
+            .tl{
+                top: -@offset;
+                left:-@offset;
+                cursor: nw-resize;
+            }
+            .tm{
+                top: -@offset;
+                left: 50%;
+                transform: translateX(-50%);
+                cursor: n-resize;
+            }
+            .tr{
+                top: -@offset;
+                right: -@offset;
+                cursor: ne-resize;
+            }
+            .ml{
+                left:-@offset;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: w-resize;
+            }
+            .mr{
+                right: -@offset;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: e-resize;
+            }
+            .bl{
+                bottom: -@offset;
+                left:-@offset;
+                cursor: sw-resize;
+            }
+            .bm{
+                bottom: -@offset;
+                left: 50%;
+                transform: translateX(-50%);
+                cursor: s-resize;
+            }
+            .br{
+                bottom: -@offset;
+                right: -@offset;
+                cursor: se-resize;
+            }
         }
     }
     .tool-wrap{
@@ -24,6 +95,7 @@
         border: 1px solid gray;
         float: right;
         position: relative;
+        box-sizing: content-box;
         .tool-inner{
             margin-bottom: 40px;
             width: @itemW;
@@ -110,4 +182,8 @@
             }
         }
     }
+}
+.generate{
+    display: block;
+    margin: 20px auto;
 }
