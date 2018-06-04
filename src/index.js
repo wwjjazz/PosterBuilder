@@ -2,7 +2,7 @@ import "./index.less";
 var imgSrc = require("./people.jpg");
 var QRCodeSrc = require("./QRCode.png");
 
-var navs = document.querySelectorAll(".tool-nav li");
+var navs = document.querySelectorAll(".tool-nav span");
 var toolInner = document.querySelector(".tool-inner ul");
 var itemW = 412;
 var selectBg = document.querySelector(".select-bg");
@@ -11,10 +11,17 @@ var dels = document.querySelectorAll(".tool-inner .del>input");
 var inputText = document.querySelectorAll(".input-text>input");
 var editBtn = document.querySelector(".edit-title input");
 var generate = document.querySelector(".generate");
+var text2 = document.querySelector("#text2");
+var text3 = document.querySelector("#text3");
+var color = document.querySelector(".color");
 var index = 0;
 var postionInfo = {};
 
-console.log(phone)
+console.log(color)
+
+color.onchange = function (e) {
+    text3.value = this.value;
+}
 
 navs.forEach(function (el,i) {
     el.onclick = function () {
@@ -29,12 +36,13 @@ navs.forEach(function (el,i) {
                 var img1 = new Image();
                 img1.src = imgSrc;
                 img1.className = "himg";
+                img1.dataset.id = i;
                 drag(phone,img1,{
                     width:"80px",
                     height:"80px",
                     top:"20px",
                     left:"220px"
-                })
+                },"wrap",true)
                 postionInfo.himg = {
                     width: 80,
                     height: 80,
@@ -49,13 +57,17 @@ navs.forEach(function (el,i) {
                 var div = document.createElement("div");
                 div.className = "title";
                 div.innerHTML = "悦读传媒";
+                div.dataset.id = i;
                 drag(phone, div, {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)"
-                })
+                },"inner")
                 console.log(getStyle(div, "width"));
                 console.log(getStyle(phone,"width"));
+                text2.value = 14;
+                text3.value = "#222222";
+                color.value = "#222222";
                 postionInfo.title = {
                     fontSize:14,
                     color:"#222",
@@ -71,12 +83,13 @@ navs.forEach(function (el,i) {
                 var img2 = new Image();
                 img2.src = QRCodeSrc;
                 img2.className = "QR";
+                img2.dataset.id = i;
                 drag(phone, img2, {
                     width: "90px",
                     height: "90px",
                     top: "394px",
                     left: "210px"
-                })
+                }, "wrap", true)
                 postionInfo.QRCode = {
                     width: 90,
                     height: 90,
@@ -117,36 +130,28 @@ dels[0].onclick = function () {
     selectBg.querySelector("input[type=text]").value = "";
     phone.style.backgroundImage = "";
     this.setAttribute("disabled",true);
-    var data = JSON.parse(localStorage.getItem("postionInfo"));
-    console.log(data)
-    data.bg.url = "";
-    localStorage.setItem("postionInfo",JSON.stringify(data))
+    postionInfo.bg.url = "";
+    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
 }
 dels[1].onclick = function () {
     console.log(11)
     phone.removeChild(phone.querySelector(".himg").parentNode);
     this.setAttribute("disabled", true);
-    var data = JSON.parse(localStorage.getItem("postionInfo"));
-    console.log(data)
-    data.himg = {};
-    localStorage.setItem("postionInfo", JSON.stringify(data))
+    postionInfo.himg = {};
+    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
 }
 dels[2].onclick = function () {
     phone.removeChild(phone.querySelector(".title").parentNode);
     this.setAttribute("disabled", true);
     editBtn.setAttribute("disabled", true);
-    var data = JSON.parse(localStorage.getItem("postionInfo"));
-    console.log(data)
-    data.title = {};
-    localStorage.setItem("postionInfo", JSON.stringify(data))
+    postionInfo.title = {};
+    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
 }
 dels[3].onclick = function () {
     phone.removeChild(phone.querySelector(".QR").parentNode);
     this.setAttribute("disabled", true);
-    var data = JSON.parse(localStorage.getItem("postionInfo"));
-    console.log(data)
-    data.QRCode = {};
-    localStorage.setItem("postionInfo", JSON.stringify(data))
+    postionInfo.QRCode = {};
+    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
 }
 editBtn.onclick = function () {
     for (let i = 0; i < inputText.length; i++) {
@@ -156,8 +161,8 @@ editBtn.onclick = function () {
         }
     }
     var div = document.querySelector(".title");
-    div.style.fontSize = inputText[0].value+"px";
-    div.style.color = inputText[1].value;
+    div.parentNode.style.fontSize = inputText[0].value+"px";
+    div.parentNode.style.color = inputText[1].value;
     // inputText.forEach(function (el) {
     //     el.value = "";
     // })
@@ -165,9 +170,15 @@ editBtn.onclick = function () {
 generate.onclick = function () {
     var data = localStorage.getItem("postionInfo");
     console.log(data);
+    console.log(postionInfo)
 }
 
-function drag(parent,child,option) {
+// parent 拖拽元素的父容器
+// child 拖拽元素的内容
+// option 拖拽元素的初始样式
+// type 拖拽元素的内容呈现方式：wrap(内部跟随外部宽高)/inner(容器宽高由内部元素决定)
+// locked 是否锁定等比缩放
+function drag(parent,child,option,type,locked) {
     var wrap = document.createElement("div");
     wrap.className = "drag-wrap";
     for(var key in option){
@@ -214,6 +225,14 @@ function drag(parent,child,option) {
     wrap.addEventListener("mousedown",function (e) {
         console.log(e);
         index++;
+        navs.forEach(function (el,i) {
+            if (i == e.target.dataset.id || i == e.target.parentNode.children[e.target.parentNode.children.length-1].dataset.id){
+                navs[i].className = "active";
+                toolInner.style.left = -itemW * i + "px";
+            }else{
+                navs[i].className = "";
+            }
+        })
         this.style.zIndex = index;
         if (e.target.tagName==="IMG"){
             e.preventDefault();
@@ -257,6 +276,29 @@ function drag(parent,child,option) {
                     break;
             }
         }else{
+            // if(Number(e.target.dataset.locked)){
+            //     e.target.parentNode.querySelectorAll(".point").forEach(function (el) {
+            //         el.style.display = "none"
+            //     })
+            //     e.target.dataset.locked = 0;
+            //     console.log(e.target.parentNode)
+            // }else{
+            //     e.target.parentNode.querySelectorAll(".point").forEach(function (el) {
+            //         el.style.display = "block"
+            //     })
+            //     e.target.dataset.locked = 1;
+            //     console.log(e.target.parentNode.querySelectorAll("point"))
+            // }
+            if (e.target.parentNode.className.includes("active")) {
+                e.target.parentNode.className = "drag-wrap";
+            }else{
+                console.log(e.target.parentNode.parentNode)
+                Array.prototype.slice.call(e.target.parentNode.parentNode.children).forEach(function (el) {
+                    el.className = "drag-wrap";
+                })
+                e.target.parentNode.className = "drag-wrap active";
+            }
+            console.log("--------------")
             document.addEventListener("mousemove", dragMove);
             document.addEventListener("mouseup", dragEnd);
         }
@@ -285,11 +327,25 @@ function drag(parent,child,option) {
                 wrap.style.transform = "";
                 wrap.style.left = now.x + "px";
                 wrap.style.top = now.y + "px";
+                if(e.target.className=="QR"){
+                    console.log(1)
+                    postionInfo.QRCode.left = now.x;
+                    postionInfo.QRCode.top = now.y;
+                } else if (e.target.className == "himg") {
+                    console.log(3)
+                    postionInfo.himg.left = now.x;
+                    postionInfo.himg.top = now.y;
+                } else if (e.target.className == "title") {
+                    console.log(8)
+                    postionInfo.title.left = now.x;
+                    postionInfo.title.top = now.y;
+                } 
             }
         }
         function dragEnd(e) {
             document.removeEventListener("mousemove", dragMove);
             document.removeEventListener("mouseup", dragEnd);
+            localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
         }
         function change(key) {
             document.addEventListener("mousemove", tt);
@@ -360,16 +416,71 @@ function drag(parent,child,option) {
                 console.log(op)
                 if(op.w>0&&op.h>0||op.h>0&&!op.w||op.w>0&&!op.h){
                     console.log(dis)
-                    wrap.style.width = op.w + "px";
-                    wrap.style.height = op.h + "px";
-                    wrap.style.top = op.t + "px";
-                    wrap.style.left = op.l + "px";
-                    wrap.style.fontSize = parseInt(op.w / startEl.w * startEl.fs)+"px";
+                    if(type=="wrap"){
+                        console.log("op",op)
+                        if(locked){
+                            if(!op.w){
+                                op.w = op.h
+                            }
+                            if(!op.h){
+                                op.h = op.w
+                            }
+                            op.w = Math.max(op.w,op.h);
+                            op.h = op.w;
+                        }
+                        if (e.target.parentNode.children[e.target.parentNode.children.length-1].className == "QR") {
+                            console.log(2,op)
+                            if (op.l) {
+                                postionInfo.QRCode.left = op.l;
+                            }
+                            if (op.t) {
+                                postionInfo.QRCode.top = op.t;
+                            }
+                            if(op.w){
+                                postionInfo.QRCode.width = op.w;
+                            }
+                            if(op.h){
+                                postionInfo.QRCode.height = op.h;
+                            }
+                        } else if (e.target.parentNode.children[e.target.parentNode.children.length-1].className == "himg") {
+                            if (op.l) {
+                                postionInfo.himg.left = op.l;
+                            }
+                            if (op.t) {
+                                postionInfo.himg.top = op.t;
+                            }
+                            if (op.w) {
+                                postionInfo.himg.width = op.w;
+                            }
+                            if (op.h) {
+                                postionInfo.himg.height = op.h;
+                            }
+                        }
+                        wrap.style.width = op.w + "px";
+                        wrap.style.height = op.h + "px";
+                        wrap.style.top = op.t + "px";
+                        wrap.style.left = op.l + "px";
+                        // wrap.style.fontSize = parseInt(op.w / startEl.w * startEl.fs) + "px";
+                        // text2.value = parseInt(op.w / startEl.w * startEl.fs);
+                    }else if(type=="inner"){
+                        if(!op.w){
+                            return false;
+                        }
+                        if (e.target.parentNode.children[e.target.parentNode.children.length - 1].className == "title") {
+                            var key = op.w / startEl.w * startEl.fs;
+                            var el = e.target.parentNode.children[e.target.parentNode.children.length - 1];
+                            console.log(el,e.target)
+                            console.log("w:",op.w,key)
+                            wrap.style.fontSize = parseInt(key) + "px";
+                            text2.value = parseInt(key);
+                        }
+                    }
                 }
             }
             function changeEnd(e) {
                 document.removeEventListener("mousemove", tt);
                 document.removeEventListener("mouseup", changeEnd);
+                localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
             }
         }
         
