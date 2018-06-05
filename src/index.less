@@ -1,6 +1,6 @@
 @import "./minireset.css";
 @itemW: 400px;
-@offset: 8px;
+@offset: 7px;
 .wrap{
     width: 766px; // 764
     overflow: hidden;
@@ -19,18 +19,13 @@
         .drag-wrap{
             position: absolute;
             font-size: 0;
-            // box-sizing: border-box;
+            box-sizing: border-box;
             user-select: none;
             font-size: 14px;
             color: #222;
+            border: 1px solid blue;
             &.active .point{
                 display: block;
-                position: absolute;
-                width: 14px;
-                height: 14px;
-                background:red;
-                z-index: 10;
-                // border-radius: 50%;
             }
             .title{
                 white-space: nowrap;
@@ -46,13 +41,13 @@
                 // float:left;
             }
             .point{
+                display: none;
                 position: absolute;
                 width: 14px;
                 height: 14px;
                 background:red;
                 z-index: 10;
                 // border-radius: 50%;
-                display: none;
             }
             .tl{
                 top: -@offset;

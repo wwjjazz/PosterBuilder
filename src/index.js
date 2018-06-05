@@ -17,39 +17,48 @@ var color = document.querySelector(".color");
 var index = 0;
 var postionInfo = {};
 
-console.log(color)
 
+// 颜色选择器
 color.onchange = function (e) {
     text3.value = this.value;
+    document.querySelector(".title").parentNode.style.color = this.value;
+    postionInfo.title.color = this.value;
+    save();
 }
-
+function save() {
+    localStorage.setItem("postionInfo", JSON.stringify(postionInfo));
+}
+// nav点击切换
 navs.forEach(function (el,i) {
     el.onclick = function () {
-        console.log(el)
+
         navs.forEach(function (el) {
             el.className = "";
         })
         this.className = "active";
         toolInner.style.left = -itemW*i+"px";
+
         if(i==1){
             if (!phone.querySelector(".himg")){
                 var img1 = new Image();
                 img1.src = imgSrc;
                 img1.className = "himg";
                 img1.dataset.id = i;
+
                 drag(phone,img1,{
                     width:"80px",
                     height:"80px",
                     top:"20px",
                     left:"220px"
                 },"wrap",true)
+
                 postionInfo.himg = {
                     width: 80,
                     height: 80,
                     top: 20,
                     left: 220
                 };
-                localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+                save();
             }
             dels[1].removeAttribute("disabled");
         } else if (i == 2) {
@@ -58,23 +67,24 @@ navs.forEach(function (el,i) {
                 div.className = "title";
                 div.innerHTML = "悦读传媒";
                 div.dataset.id = i;
+
                 drag(phone, div, {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -50%)"
-                },"inner")
-                console.log(getStyle(div, "width"));
-                console.log(getStyle(phone,"width"));
+                },"inner",true)
+
                 text2.value = 14;
                 text3.value = "#222222";
                 color.value = "#222222";
+                // console.log(css(phone, "width") ,css(div, "width"))
                 postionInfo.title = {
                     fontSize:14,
                     color:"#222",
-                    left: (parseFloat(getStyle(phone, "width")) - parseFloat(getStyle(div, "width")))/2 + 4,
-                    top: (parseFloat(getStyle(phone, "height")) - parseFloat(getStyle(div, "height"))) / 2 + 4
+                    left: (css(phone, "width") - css(div, "width")) / 2 + 4,
+                    top: (css(phone, "height") - css(div, "height")) / 2 + 4
                 };
-                localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+                    save();
             }
             dels[2].removeAttribute("disabled");
             editBtn.removeAttribute("disabled");
@@ -84,25 +94,28 @@ navs.forEach(function (el,i) {
                 img2.src = QRCodeSrc;
                 img2.className = "QR";
                 img2.dataset.id = i;
+
                 drag(phone, img2, {
                     width: "90px",
                     height: "90px",
                     top: "394px",
                     left: "210px"
                 }, "wrap", true)
+
                 postionInfo.QRCode = {
                     width: 90,
                     height: 90,
                     top: 394,
                     left: 210
                 };
-                localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+                save();
             }
             dels[3].removeAttribute("disabled");
         }
     }
 })
 
+// 选择背景图
 selectBg.querySelector("#file1").onchange = function (e) {
     var that = this;
     var data = e.target.files[0];
@@ -119,40 +132,43 @@ selectBg.querySelector("#file1").onchange = function (e) {
         postionInfo.bg = {
             url:imgFile
         };
-        localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+        save();
     };
 
     reader.readAsDataURL(data);
 }
 
+// 删除按钮
 dels[0].onclick = function () {
     selectBg.querySelector("#file1").removeAttribute("disabled");
     selectBg.querySelector("input[type=text]").value = "";
     phone.style.backgroundImage = "";
     this.setAttribute("disabled",true);
     postionInfo.bg.url = "";
-    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+    save();
 }
 dels[1].onclick = function () {
     console.log(11)
     phone.removeChild(phone.querySelector(".himg").parentNode);
     this.setAttribute("disabled", true);
     postionInfo.himg = {};
-    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+    save();
 }
 dels[2].onclick = function () {
     phone.removeChild(phone.querySelector(".title").parentNode);
     this.setAttribute("disabled", true);
     editBtn.setAttribute("disabled", true);
     postionInfo.title = {};
-    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+    save();
 }
 dels[3].onclick = function () {
     phone.removeChild(phone.querySelector(".QR").parentNode);
     this.setAttribute("disabled", true);
     postionInfo.QRCode = {};
-    localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+    save();
 }
+
+// 编辑文本样式
 editBtn.onclick = function () {
     for (let i = 0; i < inputText.length; i++) {
         if(!inputText[i].value.trim()){
@@ -163,10 +179,15 @@ editBtn.onclick = function () {
     var div = document.querySelector(".title");
     div.parentNode.style.fontSize = inputText[0].value+"px";
     div.parentNode.style.color = inputText[1].value;
+    postionInfo.title.fontSize = inputText[0].value;
+    postionInfo.title.color = inputText[1].value;
+    save();
     // inputText.forEach(function (el) {
     //     el.value = "";
     // })
 }
+
+// 生成位置信息对象
 generate.onclick = function () {
     var data = localStorage.getItem("postionInfo");
     console.log(data);
@@ -181,320 +202,319 @@ generate.onclick = function () {
 function drag(parent,child,option,type,locked) {
     var wrap = document.createElement("div");
     wrap.className = "drag-wrap";
+    wrap.dataset.inclass = child.className;
     for(var key in option){
         wrap.style[key] = option[key];
     }
-    var points={};
-    for (let i = 0; i <8; i++) {
-        points["item"+i] = document.createElement("div");
-        points["item" + i].className = "point";
-        switch (i) {
-            case 0:
-                points["item" + i].className += " tl";
-                break;
-            case 1:
-                points["item" + i].className += " tm";
-                break;
-            case 2:
-                points["item" + i].className += " tr";
-                break;
-            case 3:
-                points["item" + i].className += " ml";
-                break;
-            case 4:
-                points["item" + i].className += " mr";
-                break;
-            case 5:
-                points["item" + i].className += " bl";
-                break;
-            case 6:
-                points["item" + i].className += " bm";
-                break;
-            default:
-                points["item" + i].className += " br";
-                break;
-        }
-    }
-    for(var el in points){
-        wrap.appendChild(points[el])
-    }
-    console.log(points)
-    wrap.style.border = "2px solid blue";
+    var arr = locked ? ["tl", "tr", "bl", "br"] : ["tl", "tm", "tr", "ml", "mr", "bl", "bm", "br"];
+    arr.forEach(function (el) {
+        var div = document.createElement("div");
+        div.className = "point "+el;
+        div.dataset.id = child.dataset.id;
+        div.dataset.pa = el;
+        wrap.appendChild(div);
+    })
+    
     wrap.appendChild(child);
     parent.appendChild(wrap);
+
     wrap.addEventListener("mousedown",function (e) {
-        console.log(e);
+
+        var elClassName = e.target.className;
+        
+        // 提升层级
         index++;
+        this.style.zIndex = index;
+
+        // 切换nav的激活状态
         navs.forEach(function (el,i) {
-            if (i == e.target.dataset.id || i == e.target.parentNode.children[e.target.parentNode.children.length-1].dataset.id){
+            if (i == e.target.dataset.id){
                 navs[i].className = "active";
                 toolInner.style.left = -itemW * i + "px";
             }else{
                 navs[i].className = "";
             }
         })
-        this.style.zIndex = index;
+        
+        // 阻止图片拖出
         if (e.target.tagName==="IMG"){
             e.preventDefault();
         }
+        
+        // 当前鼠标位置
         var startPoint = {
             x: e.clientX,
             y: e.clientY
         }
+
+        // 当前元素的位置
         var startEl = {
-            x: wrap.offsetLeft,
-            y: wrap.offsetTop,
-            w: parseFloat(wrap.style.width) || parseFloat(getStyle(wrap,"width")),
-            h: parseFloat(wrap.style.height) || parseFloat(getStyle(wrap,"height")),
-            fs: parseFloat(getStyle(wrap, "font-size"))
+            l: wrap.offsetLeft,
+            t: wrap.offsetTop,
+            w: css(wrap,"width"),
+            h: css(wrap,"height"),
+            fs: css(wrap, "font-size")
         }
-        if (e.target.className.includes("point")){
-            switch (e.target.className) {
-                case "point tl":
-                    change("tl");
-                    break;
-                case "point tm":
-                    change("tm");
-                    break;
-                case "point tr":
-                    change("tr");
-                    break;
-                case "point ml":
-                    change("ml");
-                    break;
-                case "point mr":
-                    change("mr");
-                    break;
-                case "point bl":
-                    change("bl");
-                    break;
-                case "point bm":
-                    change("bm");
-                    break;
-                default:
-                    change("br");
-                    break;
-            }
+
+        console.log(startPoint,startEl)
+
+        // 判断点中的是否为拖快
+        if (elClassName.includes("point")){
+            change(e.target.dataset.pa);
         }else{
-            // if(Number(e.target.dataset.locked)){
-            //     e.target.parentNode.querySelectorAll(".point").forEach(function (el) {
-            //         el.style.display = "none"
-            //     })
-            //     e.target.dataset.locked = 0;
-            //     console.log(e.target.parentNode)
-            // }else{
-            //     e.target.parentNode.querySelectorAll(".point").forEach(function (el) {
-            //         el.style.display = "block"
-            //     })
-            //     e.target.dataset.locked = 1;
-            //     console.log(e.target.parentNode.querySelectorAll("point"))
-            // }
-            if (e.target.parentNode.className.includes("active")) {
+            if (e.target.parentNode.className.includes("active") && e.target.parentNode.className.includes("drag-wrap")) {
                 e.target.parentNode.className = "drag-wrap";
-            }else{
-                console.log(e.target.parentNode.parentNode)
+            } else if (e.target.parentNode.className.includes("drag-wrap")){
                 Array.prototype.slice.call(e.target.parentNode.parentNode.children).forEach(function (el) {
                     el.className = "drag-wrap";
                 })
                 e.target.parentNode.className = "drag-wrap active";
             }
-            console.log("--------------")
+            
             document.addEventListener("mousemove", dragMove);
             document.addEventListener("mouseup", dragEnd);
         }
         function dragMove(e) {
-            var phoneRect = phone.getBoundingClientRect();
-            var wrapRect = wrap.getBoundingClientRect();
+            var phoneW = css(phone, "width");
+            var phoneH = css(phone, "height");
+            var wrapW = css(wrap, "width");
+            var wrapH = css(wrap, "height");
+            // var wrapRect = wrap.getBoundingClientRect();
             var dis = {
                 x: e.clientX - startPoint.x,
                 y: e.clientY - startPoint.y
             }
             var now = {
-                x: startEl.x + dis.x,
-                y: startEl.y + dis.y
+                l: startEl.l + dis.x,
+                t: startEl.t + dis.y
             };
-            if (now.x < 0) {
-                now.x = 0;
-            } else if (now.x > phoneRect.width - wrapRect.width) {
-                now.x = phoneRect.width - wrapRect.width;
+            if (now.l < 0) {
+                now.l = 0;
+            } else if (now.l > phoneW - wrapW) {
+                now.l = phoneW - wrapW;
             }
-            if (now.y < 0) {
-                now.y = 0;
-            } else if (now.y > phoneRect.height - wrapRect.height) {
-                now.y = phoneRect.height - wrapRect.height;
+            if (now.t < 0) {
+                now.t = 0;
+            } else if (now.t > phoneH - wrapH) {
+                now.t = phoneH - wrapH;
             }
             if (Math.abs(dis.x) > 5 || Math.abs(dis.y) > 5) {
                 wrap.style.transform = "";
-                wrap.style.left = now.x + "px";
-                wrap.style.top = now.y + "px";
+                wrap.style.left = now.l + "px";
+                wrap.style.top = now.t + "px";
+
                 if(e.target.className=="QR"){
-                    console.log(1)
-                    postionInfo.QRCode.left = now.x;
-                    postionInfo.QRCode.top = now.y;
+                    postionInfo.QRCode.left = now.l;
+                    postionInfo.QRCode.top = now.t;
                 } else if (e.target.className == "himg") {
-                    console.log(3)
-                    postionInfo.himg.left = now.x;
-                    postionInfo.himg.top = now.y;
+                    postionInfo.himg.left = now.l;
+                    postionInfo.himg.top = now.t;
                 } else if (e.target.className == "title") {
-                    console.log(8)
-                    postionInfo.title.left = now.x;
-                    postionInfo.title.top = now.y;
+                    postionInfo.title.left = now.l;
+                    postionInfo.title.top = now.t;
                 } 
             }
         }
         function dragEnd(e) {
             document.removeEventListener("mousemove", dragMove);
             document.removeEventListener("mouseup", dragEnd);
-            localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
+            save();
         }
-        function change(key) {
+        function change(pa) {
+            console.log(pa)
             document.addEventListener("mousemove", tt);
             document.addEventListener("mouseup", changeEnd);
             function tt(e) {
-                changeMove(key,e);
+                changeMove(e,pa)
             }
-            function changeMove(key,e) {
-                console.log(key)
+            
+            function changeMove(e, pa) {
+                var op = {};
                 var wrapRect = wrap.getBoundingClientRect();
                 var dis = {
                     x: e.clientX - startPoint.x,
                     y: e.clientY - startPoint.y
                 }
-                var op = {};
-                switch (key) {
-                    case "tl":
-                        op = {
-                            w: startEl.w - dis.x,
-                            h: startEl.h - dis.y,
-                            t: startEl.y + dis.y,
-                            l: startEl.x + dis.x
-                        }
-                        break;
-                    case "tm":
-                        op = {
-                            h: startEl.h - dis.y,
-                            t: startEl.y + dis.y,
-                        }
-                        break;
-                    case "tr":
-                        op = {
-                            t: startEl.y + dis.y,
-                            w: startEl.w + dis.x,
-                            h: startEl.h - dis.y
-                        }
-                        break;
-                    case "ml":
-                        op = {
-                            w: startEl.w - dis.x,
-                            l: startEl.x + dis.x
-                        }
-                        break;
-                    case "mr":
-                        op = {
-                            w: startEl.w + dis.x
-                        }
-                        break;
-                    case "bl":
-                        op = {
-                            w: startEl.w - dis.x,
-                            h: startEl.h + dis.y,
-                            l: startEl.x + dis.x
-                        }
-                        break;
-                    case "bm":
-                        op = {
-                            h: startEl.h + dis.y
-                        }
-                        break;
-                    default:
-                        op = {
-                            w: startEl.w + dis.x,
-                            h: startEl.h + dis.y
-                        }
-                        break;
+
+                // 是否等比缩放
+                if (locked) {
+                    switch (pa) {
+                        case "tl":
+                            op = {
+                                width: startEl.w-dis.x,
+                                height: startEl.h-dis.x,
+                                left: startEl.l+dis.x,
+                                top: startEl.t+dis.x
+                            };
+                            break;
+                        case "tr":
+                            op = {
+                                width: startEl.w + dis.x,
+                                height: startEl.h+dis.x,
+                                left: startEl.l,
+                                top: startEl.t-dis.x
+                            };
+                            break;
+                        case "bl":
+                            op = {
+                                width: startEl.w -dis.x,
+                                height: startEl.h-dis.x,
+                                left: startEl.l+dis.x,
+                                top: startEl.t
+                            };
+                            break;
+                        default:
+                            op = {
+                                width: startEl.w + dis.x,
+                                height: startEl.h + dis.x,
+                                left: startEl.l,
+                                top: startEl.t
+                            };
+                            break;
+                    }
+                }else{
+                    switch (pa) {
+                        case "tl":
+                            op = {
+                                width: startEl.w - dis.x,
+                                height: startEl.h - dis.y,
+                                top: startEl.t + dis.y,
+                                left: startEl.l + dis.x
+                            }
+                            break;
+                        case "tm":
+                            op = {
+                                height: startEl.h - dis.y,
+                                width:startEl.w,
+                                left:startEl.l,
+                                top: startEl.t + dis.y
+                            }
+                            break;
+                        case "tr":
+                            op = {
+                                top: startEl.t + dis.y,
+                                width: startEl.w + dis.x,
+                                left:startEl.l,
+                                height: startEl.h - dis.y
+                            }
+                            break;
+                        case "ml":
+                            op = {
+                                width: startEl.w - dis.x,
+                                left: startEl.l + dis.x,
+                                top: startEl.t,
+                                height: startEl.h
+                            }
+                            break;
+                        case "mr":
+                            op = {
+                                width: startEl.w + dis.x,
+                                left: startEl.l,
+                                top: startEl.t,
+                                height: startEl.h
+                            }
+                            break;
+                        case "bl":
+                            op = {
+                                width: startEl.w - dis.x,
+                                height: startEl.h + dis.y,
+                                left: startEl.l + dis.x,
+                                top: startEl.t
+                            }
+                            break;
+                        case "bm":
+                            op = {
+                                height: startEl.h + dis.y,
+                                top: startEl.t,
+                                left: startEl.l,
+                                width: startEl.w
+                            }
+                            break;
+                        default:
+                            op = {
+                                width: startEl.w + dis.x,
+                                height: startEl.h + dis.y,
+                                left: startEl.l,
+                                top: startEl.t
+                            }
+                            break;
+                    }
                 }
-                console.log(op)
-                if(op.w>0&&op.h>0||op.h>0&&!op.w||op.w>0&&!op.h){
-                    console.log(dis)
-                    if(type=="wrap"){
-                        console.log("op",op)
-                        if(locked){
-                            if(!op.w){
-                                op.w = op.h
+                
+                if (op.width >= 0 && op.height >= 0 || op.height >= 0 && !op.width || op.width >= 0 && !op.height) {
+                    if (type == "wrap") {
+
+                        if (e.target.parentNode.dataset&&e.target.parentNode.dataset.inclass == "QR") {
+                            
+                            if (op.left) {
+                                postionInfo.QRCode.left = op.left;
                             }
-                            if(!op.h){
-                                op.h = op.w
+                            if (op.top) {
+                                postionInfo.QRCode.top = op.top;
                             }
-                            op.w = Math.max(op.w,op.h);
-                            op.h = op.w;
-                        }
-                        if (e.target.parentNode.children[e.target.parentNode.children.length-1].className == "QR") {
-                            console.log(2,op)
-                            if (op.l) {
-                                postionInfo.QRCode.left = op.l;
+                            if (op.width) {
+                                postionInfo.QRCode.width = op.width;
                             }
-                            if (op.t) {
-                                postionInfo.QRCode.top = op.t;
+                            if (op.height) {
+                                postionInfo.QRCode.height = op.height;
                             }
-                            if(op.w){
-                                postionInfo.QRCode.width = op.w;
+                        } else if (e.target.parentNode.dataset&&e.target.parentNode.dataset.inclass == "himg") {
+                            if (op.left) {
+                                postionInfo.himg.left = op.left;
                             }
-                            if(op.h){
-                                postionInfo.QRCode.height = op.h;
+                            if (op.top) {
+                                postionInfo.himg.top = op.top;
                             }
-                        } else if (e.target.parentNode.children[e.target.parentNode.children.length-1].className == "himg") {
-                            if (op.l) {
-                                postionInfo.himg.left = op.l;
+                            if (op.width) {
+                                postionInfo.himg.width = op.width;
                             }
-                            if (op.t) {
-                                postionInfo.himg.top = op.t;
-                            }
-                            if (op.w) {
-                                postionInfo.himg.width = op.w;
-                            }
-                            if (op.h) {
-                                postionInfo.himg.height = op.h;
+                            if (op.height) {
+                                postionInfo.himg.height = op.height;
                             }
                         }
-                        wrap.style.width = op.w + "px";
-                        wrap.style.height = op.h + "px";
-                        wrap.style.top = op.t + "px";
-                        wrap.style.left = op.l + "px";
-                        // wrap.style.fontSize = parseInt(op.w / startEl.w * startEl.fs) + "px";
-                        // text2.value = parseInt(op.w / startEl.w * startEl.fs);
-                    }else if(type=="inner"){
-                        if(!op.w){
+                        console.log(op)
+                        for(var k in op){
+                            wrap.style[k] = op[k]+"px";
+                        }
+                    } else if (type == "inner") {
+                        console.log(2, op)
+                        if (!op.width) {
                             return false;
                         }
-                        if (e.target.parentNode.children[e.target.parentNode.children.length - 1].className == "title") {
-                            var key = op.w / startEl.w * startEl.fs;
-                            var el = e.target.parentNode.children[e.target.parentNode.children.length - 1];
-                            console.log(el,e.target)
-                            console.log("w:",op.w,key)
-                            wrap.style.fontSize = parseInt(key) + "px";
-                            text2.value = parseInt(key);
-                        }
+                        
+                        var key = op.width / startEl.w * startEl.fs;
+                        wrap.style.fontSize = parseInt(key) + "px";
+                        wrap.style.transform = "";
+                        wrap.style.left = op.left + "px";
+                        wrap.style.top = op.top + "px";
+                        
+                        text2.value = parseInt(key);
+                        postionInfo.title.fontSize = parseInt(key);
+                        postionInfo.title.left = css(wrap, "left");
+                        postionInfo.title.top = css(wrap,"top");
                     }
                 }
             }
             function changeEnd(e) {
+                console.log(2)
                 document.removeEventListener("mousemove", tt);
                 document.removeEventListener("mouseup", changeEnd);
-                localStorage.setItem("postionInfo", JSON.stringify(postionInfo))
-            }
+                save();
+            }  
         }
-        
     })    
 }
-function getStyle(node, attr) {
-    if (typeof getComputedStyle != 'undefined') {
-        var value = getComputedStyle(node, null).getPropertyValue(attr);
-        return attr == 'opacity' ? value * 100 : value; //兼容不透明度，如果是不透明度，则返回整数方便计算
-    } else if (typeof node.currentStyle != 'undefined') {
-        if (attr == 'opacity') { //兼容不透明度
-            return Number(node.currentStyle.getAttribute('filter').match(/(?:opacity[=:])(\d+)/)[1]);
+
+// 设置/获取元素CSS样式
+function css(el, attr, val) {
+    if (arguments.length > 2) {
+        if (attr == "opacity") {
+            el.style[attr] = val;
+            el.style.filter = "alpha(opacity = " + val * 100 + ")";
         } else {
-            return node.currentStyle.getAttribute(attr);
+            el.style[attr] = val + "px";
         }
+    } else {
+        return el.currentStyle ? parseFloat(el.currentStyle[attr]) : parseFloat(getComputedStyle(el)[attr]);
     }
 }

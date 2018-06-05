@@ -9,14 +9,21 @@
     <meta name="format-detection" content="telephone=no">
     <title>海报生成器</title>
 </head>
-<body>
+<body ondragstart="return false">
     <div class="wrap">
         <div class="phone"></div>
         <div class="tool-wrap">
+            <div class="tool-nav">
+                <label>海报元素</label>
+                <span class="active">背景</span>
+                <span>头像</span>
+                <span>昵称</span>
+                <span>二维码</span>
+            </div>
             <div class="tool-inner">
                 <ul>
                     <li>
-                        <p class="select-bg">                            
+                        <p class="select-bg">
                             <input type="text" disabled placeholder="请选择背景图">
                             <label for="file1">选择图片</label>
                             <input type="file" id="file1">
@@ -32,12 +39,14 @@
                     </li>
                     <li>
                         <p class="input-text">
-                            <label for="text2">字号：</label>
-                            <input type="text" id="text2">
+                            <label for="text2">文字大小</label>
+                            <input type="text" id="text2" value="14">
+                            <span>px</span>
                         </p>
                         <p class="input-text">
-                            <label for="text3">颜色：</label>
-                            <input type="text" id="text3">
+                            <label for="text3">文字颜色</label>
+                            <input type="text" id="text3" value="#222222">
+                            <input type="color" class="color" value="#222222">
                         </p>
                         <p class="edit-title">
                             <input type="button" value="编辑标题">
@@ -53,13 +62,8 @@
                     </li>
                 </ul>
             </div>
-            <ul class="tool-nav">
-                <li class="active">背景</li>
-                <li>头像</li>
-                <li>昵称</li>
-                <li>二维码</li>
-            </ul>
         </div>
     </div>
+    <button class="generate">生成图片</button>
 <script type="text/javascript" src="main.js"></script></body>
 </html>
